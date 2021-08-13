@@ -4,6 +4,6 @@ This app provides an interface that allows the user to interact with the relatio
 
 ### Features
 
-- Show all departments, roles and employees.
-- Add a department, role and employee.
-- Update a particular employee.
+- Ability to show organisation's departments, roles and employees.
+- Ability to add a department, role and employee.
+- Ability to update the role of a particular employee.
