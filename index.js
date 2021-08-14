@@ -186,7 +186,7 @@ function addEmployee() {
                 .then((choice) => {
                   let setManagerId;
                   if (choice.manager === "None") {
-                    setManagerId = NULL;
+                    setManagerId = null;
                   } else {
                     supervisors.forEach((supervisor) => {
                       if (supervisor.manager === choice.manager) {
