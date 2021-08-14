@@ -8,5 +8,8 @@ const sql = mysql.createConnection({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
 });
+sql.connect((err) => {
+  if (err) throw err;
+});
 
 module.exports = sql;
