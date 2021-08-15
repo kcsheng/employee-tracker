@@ -38,6 +38,12 @@ const ask = () => {
         case "a":
           addEmployee();
           break;
+        case "b":
+          updateEmployeeManager();
+          break;
+        case "c":
+          deleteEmployee();
+          break;
         case "d":
           viewAllEmployees();
           break;
@@ -51,10 +57,6 @@ const ask = () => {
         case "o":
           process.exit();
       }
-      // process.exit();
-      // switch (answer.task) {
-      //   case "a":
-      //     viewAllEmployees();
 
       // case "c":
       //   updateEmployeeRole();
@@ -70,13 +72,6 @@ const ask = () => {
     .catch((err) => console.error(err));
 };
 
-// sql
-//   .promise()
-//   .query(
-//     `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`,
-//     [first_name, last_name, role_id, manager_id]
-//   )
-
 const init = () => {
   console.log(banner);
   ask();
@@ -85,6 +80,105 @@ const init = () => {
 init();
 
 // Query functions
+function deleteEmployee() {
+  sql
+    .promise()
+    .query(
+      `SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee`
+    )
+    .then(([rows, fields]) => JSON.parse(JSON.stringify(rows)))
+    .then((data) => {
+      const idsAndNames = data; // Store data for later use
+      const names = idsAndNames.map((idAndName) => idAndName.name);
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "name",
+            message: "Which employee would you like to delete?",
+            choices: names,
+          },
+        ])
+        .then((person) => {
+          // Get back employee's id and name for later use
+          const [employee] = idsAndNames.filter((idAndName) => {
+            return idAndName.name === person.name;
+          });
+          sql.query(`DELETE FROM employee WHERE id = ${employee.id}`);
+          console.log(`The employee ${employee.name} has been deleted!`);
+        })
+        .catch((err) => console.error(err));
+    })
+    .then(() => ask())
+    .catch((err) => console.error(err));
+}
+
+function updateEmployeeManager() {
+  sql
+    .promise()
+    .query(
+      `SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee`
+    )
+    .then(([rows, fields]) => JSON.parse(JSON.stringify(rows)))
+    .then((data) => {
+      const idsAndNames = data;
+      const names = idsAndNames.map((idAndName) => idAndName.name);
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "name",
+            message: "Whose manager would you like to update?",
+            choices: names,
+          },
+        ])
+        .then((person) => {
+          const [employee] = idsAndNames.filter((idAndName) => {
+            return idAndName.name === person.name;
+          });
+          sql.query(
+            `SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee WHERE manager_id IS NULL`,
+            (err, data) => {
+              if (err) throw err;
+              const supervisors = JSON.parse(JSON.stringify(data));
+              const managers = supervisors.map(
+                (supervisor) => supervisor.manager
+              );
+              // If the target person happens to be a manager, the list should exclude self.
+              const realManagers = managers.filter((manager) => {
+                return manager !== employee.name;
+              });
+
+              inquirer
+                .prompt([
+                  {
+                    type: "list",
+                    name: "name",
+                    message: `Who should be ${employee.name}'s manager?`,
+                    choices: realManagers,
+                  },
+                ])
+                .then((manager) => {
+                  const [managerIdAndName] = supervisors.filter(
+                    (supervisor) => {
+                      return supervisor.manager === manager.name;
+                    }
+                  );
+                  sql.query(
+                    `UPDATE employee SET manager_id = ${managerIdAndName.id} WHERE id = ${employee.id}`
+                  );
+                  console.log("The employee's manager is updated!");
+                })
+                .catch((err) => console.error(err));
+            }
+          );
+        })
+        .catch((err) => console.error(err));
+    })
+    .then(() => ask())
+    .catch((err) => console.error(err));
+}
+
 function viewAllDepartments() {
   sql
     .promise()
@@ -204,6 +298,7 @@ function addEmployee() {
                   sql.query(
                     `UPDATE employee SET manager_id = ${setManagerId} WHERE id = (SELECT MAX(id) FROM (SELECT * FROM employee) AS worker)`
                   );
+                  console.log("New Employee Added!");
                 })
                 .then(() => ask())
                 .catch((err) => console.error(err));
