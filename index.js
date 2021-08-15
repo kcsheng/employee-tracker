@@ -97,7 +97,7 @@ function viewStaffBudget() {
   sql
     .promise()
     .query(
-      `SELECT SUM(salary) AS Staff_Budget FROM role INNER JOIN employee ON role.id = employee.role_id`
+      `SELECT department.name AS department, SUM(salary) AS Staff_Budget FROM role INNER JOIN employee ON role.id = employee.role_id INNER JOIN department ON role.department_id = department.id GROUP BY department.name`
     )
     .then((result) => JSON.parse(JSON.stringify(result[0])))
     .then((budget) => {
