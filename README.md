@@ -7,6 +7,7 @@ This app provides an interface that allows the user to interact with the relatio
 - Ability to show organisation's departments, roles and employees.
 - Ability to add a department, role and employee.
 - Ability to update the role of a particular employee.
+- Ability to delete a department, role or employee.
 
 ### Demo
 
