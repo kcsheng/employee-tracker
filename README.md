@@ -10,4 +10,5 @@ This app provides an interface that allows the user to interact with the relatio
 
 ### Demo
 
+Click [here](./demo/employee_tracker_demo.gif) to restart demo in a separate window.
 ![demo image](./demo/employee_tracker_demo.gif)
