@@ -6,6 +6,7 @@ const banner = require("./src/banner");
 const inquirer = require("inquirer");
 const sql = require("./config/mysqlConnect");
 const cTable = require("console.table");
+const { listenerCount } = require("events");
 
 const ask = () => {
   inquirer
@@ -47,6 +48,12 @@ const ask = () => {
         case "d":
           viewAllEmployees();
           break;
+        case "e":
+          viewEmployeesByManager();
+          break;
+        case "f":
+          viewEmployeesByDepartment();
+          break;
         case "j":
           viewAllRoles();
           break;
@@ -80,6 +87,78 @@ const init = () => {
 init();
 
 // Query functions
+function viewEmployeesByDepartment() {
+  sql
+    .promise()
+    .query(`SELECT name AS department FROM department`)
+    .then((rows, fields) => JSON.parse(JSON.stringify(rows[0])))
+    .then((data) => {
+      const departments = data.map((item) => item.department);
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "department",
+            message: "Which department would you like view employees in?",
+            choices: departments,
+          },
+        ])
+        .then((selection) => {
+          const departmentName = selection.department;
+          sql.query(
+            `SELECT employee.id, CONCAT(first_name, " ", last_name) AS employee, title, salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id WHERE department.name = "${departmentName}"`,
+            (err, result) => {
+              if (err) throw err;
+              console.table(result);
+              ask();
+            }
+          );
+        })
+        .catch((err) => console.error(err));
+    })
+    .catch((err) => console.error(err));
+}
+
+function viewEmployeesByManager() {
+  sql
+    .promise()
+    .query(
+      `SELECT DISTINCT e.manager_id, CONCAT(m.first_name, " ", m.last_name) AS managerName FROM employee m INNER JOIN employee e ON m.id = e.manager_id`
+    )
+    .then((rows, fields) => JSON.parse(JSON.stringify(rows[0])))
+    .then((managers) => {
+      const managersIDsAndNames = managers;
+      const managerNames = managersIDsAndNames.map(
+        (managerIdAndName) => managerIdAndName.managerName
+      );
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "manager",
+            message: "Which manager's group would you like to view?",
+            choices: managerNames,
+          },
+        ])
+        .then((result) => {
+          const [targetManager] = managersIDsAndNames.filter(
+            (managerIdAndName) =>
+              managerIdAndName.managerName === result.manager
+          );
+          sql.query(
+            `SELECT employee.id, CONCAT(first_name, " ", last_name) AS employee, title, salary, name AS department FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id WHERE manager_id = ${targetManager.manager_id}`,
+            (err, result) => {
+              if (err) throw err;
+              console.table(result);
+              ask();
+            }
+          );
+        })
+        .catch((err) => console.error(err));
+    })
+    .catch((err) => console.error(err));
+}
+
 function deleteEmployee() {
   sql
     .promise()
@@ -168,7 +247,9 @@ function updateEmployeeManager() {
                   sql.query(
                     `UPDATE employee SET manager_id = ${managerIdAndName.id} WHERE id = ${employee.id}`
                   );
-                  console.log("The employee's manager is updated!");
+                  console.log(
+                    `The employee ${employee.name}'s manager is updated!`
+                  );
                   ask();
                 })
                 .catch((err) => console.error(err));
