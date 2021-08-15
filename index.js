@@ -16,32 +16,40 @@ const ask = () => {
         name: "task",
         message: "What would you like to do?",
         choices: [
-          { value: "a", name: "View All Employees" },
-          { value: "b", name: "Add Employee" },
-          { value: "c", name: "Update Employee role" },
-          { value: "d", name: "View All Roles" },
-          { value: "e", name: "Add Role" },
-          { value: "f", name: "View All Departments" },
-          { value: "g", name: "Add Department" },
-          { value: "h", name: "Exit Program" },
+          { value: "a", name: "Add Employee" },
+          { value: "b", name: "Update Employee's Manager" },
+          { value: "c", name: "Delete Employee" },
+          { value: "d", name: "View All Employees" },
+          { value: "e", name: "View Employees By Manager" },
+          { value: "f", name: "View Employees By Department" },
+          { value: "g", name: "Add Role" },
+          { value: "h", name: "Delete Role" },
+          { value: "i", name: "Update Employee role" },
+          { value: "j", name: "View All Roles" },
+          { value: "k", name: "Add Department" },
+          { value: "l", name: "Delete Department" },
+          { value: "m", name: "View All Departments" },
+          { value: "n", name: "View Utilised Budget" },
+          { value: "o", name: "Exit Program" },
         ],
       },
     ])
     .then((answers) => {
       switch (answers.task) {
         case "a":
-          viewAllEmployees();
-          break;
-        case "d":
-          viewAllRoles();
-          break;
-        case "f":
-          viewAllDepartments();
-          break;
-        case "b":
           addEmployee();
           break;
-        case "h":
+        case "d":
+          viewAllEmployees();
+          break;
+        case "j":
+          viewAllRoles();
+          break;
+        case "m":
+          viewAllDepartments();
+          break;
+
+        case "o":
           process.exit();
       }
       // process.exit();
