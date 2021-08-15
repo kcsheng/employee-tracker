@@ -106,10 +106,11 @@ function deleteEmployee() {
           });
           sql.query(`DELETE FROM employee WHERE id = ${employee.id}`);
           console.log(`The employee ${employee.name} has been deleted!`);
+          ask();
         })
         .catch((err) => console.error(err));
     })
-    .then(() => ask())
+
     .catch((err) => console.error(err));
 }
 
@@ -168,6 +169,7 @@ function updateEmployeeManager() {
                     `UPDATE employee SET manager_id = ${managerIdAndName.id} WHERE id = ${employee.id}`
                   );
                   console.log("The employee's manager is updated!");
+                  ask();
                 })
                 .catch((err) => console.error(err));
             }
@@ -175,7 +177,6 @@ function updateEmployeeManager() {
         })
         .catch((err) => console.error(err));
     })
-    .then(() => ask())
     .catch((err) => console.error(err));
 }
 
@@ -198,8 +199,8 @@ function viewAllRoles() {
     )
     .then(([rows, fields]) => {
       console.table(rows);
+      ask();
     })
-    .then(() => ask())
     .catch((err) => console.error(err));
 }
 
@@ -211,8 +212,8 @@ function viewAllEmployees() {
     )
     .then(([rows, fields]) => {
       console.table(rows);
+      ask();
     })
-    .then(() => ask())
     .catch((err) => console.error(err));
 }
 
@@ -299,8 +300,8 @@ function addEmployee() {
                     `UPDATE employee SET manager_id = ${setManagerId} WHERE id = (SELECT MAX(id) FROM (SELECT * FROM employee) AS worker)`
                   );
                   console.log("New Employee Added!");
+                  ask();
                 })
-                .then(() => ask())
                 .catch((err) => console.error(err));
             }
           );
@@ -312,36 +313,36 @@ function addEmployee() {
     .catch((err) => console.error(err));
 }
 
-function addDepartment(name) {
-  sql
-    .promise()
-    .query(`INSERT INTO department (name) VALUES (?)`, [name])
-    .then(() => ask())
-    .catch((err) => console.error(err));
-}
+// function addDepartment(name) {
+//   sql
+//     .promise()
+//     .query(`INSERT INTO department (name) VALUES (?)`, [name])
+//     .then(() => ask())
+//     .catch((err) => console.error(err));
+// }
 
-function addRole(name, salary, department_id) {
-  sql
-    .promise()
-    .query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [
-      name,
-      salary,
-      department_id,
-    ])
-    .then(() => ask())
-    .catch((err) => console.error(err));
-}
+// function addRole(name, salary, department_id) {
+//   sql
+//     .promise()
+//     .query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [
+//       name,
+//       salary,
+//       department_id,
+//     ])
+//     .then(() => ask())
+//     .catch((err) => console.error(err));
+// }
 
-function updateEmployeeRole(employee_id, role_id) {
-  sql
-    .promise()
-    .query(`UPDATE employee SET role_id = ? WHERE id = ?`, [
-      role_id,
-      employee_id,
-    ])
-    .then(() => ask())
-    .catch((err) => console.error(err));
-}
+// function updateEmployeeRole(employee_id, role_id) {
+//   sql
+//     .promise()
+//     .query(`UPDATE employee SET role_id = ? WHERE id = ?`, [
+//       role_id,
+//       employee_id,
+//     ])
+//     .then(() => ask())
+//     .catch((err) => console.error(err));
+// }
 
 // const roleNames = [];
 // data[0].forEach((row) => roleNames.push(row.title));
