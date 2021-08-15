@@ -96,8 +96,14 @@ init();
 function viewStaffBudget() {
   sql
     .promise()
-    .query()
-    .then()
+    .query(
+      `SELECT SUM(salary) AS Staff_Budget FROM role INNER JOIN employee ON role.id = employee.role_id`
+    )
+    .then((result) => JSON.parse(JSON.stringify(result[0])))
+    .then((budget) => {
+      console.table(budget);
+      ask();
+    })
     .catch((err) => console.error(err));
 }
 
