@@ -6,7 +6,6 @@ const banner = require("./src/banner");
 const inquirer = require("inquirer");
 const sql = require("./config/mysqlConnect");
 const cTable = require("console.table");
-const { query } = require("./config/mysqlConnect");
 
 const ask = () => {
   inquirer
